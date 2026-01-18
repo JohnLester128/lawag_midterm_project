@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('position');
             $table->integer('salary');
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }

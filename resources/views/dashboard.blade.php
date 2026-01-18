@@ -56,11 +56,30 @@
         <!-- Employee Management Section -->
         <div class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800">
             <div class="flex h-full flex-col p-6">
+
+                <div class="flex h-full flex-col p-6">
+                <div class="mb-4 flex justify-end">
+                    <form method="GET" action="{{ route('employees.export') }}" class="inline">
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                        <input type="hidden" name="department_filter" value="{{ request('department_filter') }}">
+
+                        <button type="submit"
+                                class="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Export to PDF
+                        </button>
+                    </form>
+                </div>
+
+
+
                 <!-- Add New Employee Form -->
                 <div class="mb-6 rounded-lg border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900/50">
                     <h2 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-neutral-100">Add New Employee</h2>
 
-                    <form action="{{ route('employees.store') }}" method="POST" class="grid gap-4 md:grid-cols-2">
+                    <form action="{{ route('employees.store') }}" method="POST" enctype="multipart/form-data" class="grid gap-4 md:grid-cols-2">
                         @csrf
 
                         <div>
@@ -110,10 +129,80 @@
                             @enderror
                         </div>
 
+                        <!-- Photo Upload -->
+                        <div class="md:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                Employee Photo (Optional)
+                            </label>
+                            <input
+                                type="file"
+                                name="photo"
+                                accept="image/jpeg,image/png,image/jpg"
+                                class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100 dark:file:bg-blue-900/20 dark:file:text-blue-400"
+                            >
+                            <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                JPG, PNG or JPEG. Max 2MB.
+                            </p>
+                            @error('photo')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div class="md:col-span-2 flex justify-end">
                             <button type="submit" class="rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                                 Add Employee
                             </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Search & Filter Section -->
+                <div class="rounded-xl border mb-10 border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
+                    <h2 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-neutral-100">Search & Filter Employees</h2>
+
+                    <form action="{{ route('dashboard') }}" method="GET" class="grid gap-4 md:grid-cols-3">
+                        <!-- Search Input -->
+                        <div class="md:col-span-1">
+                            <label class="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Search</label>
+                            <input
+                                type="text"
+                                name="search"
+                                value="{{ request('search') }}"
+                                placeholder="Search by name or email"
+                                class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"
+                            >
+                        </div>
+
+                        
+                        <!-- Department Filter Dropdown -->
+                        <div class="md:col-span-1">
+                            <label class="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Filter by Department</label>
+                            <select
+                                name="department_filter"
+                                class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"
+                            >
+                                <option value="">All Departments</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" {{ request('department_filter') == $department->id ? 'selected' : '' }}>
+                                        {{ $department->department_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-end gap-2 md:col-span-1">
+                            <button
+                                type="submit"
+                                class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                            >
+                                Apply Filters
+                            </button>
+                            <a
+                                href="{{ route('dashboard') }}"
+                                class="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                            >
+                                Clear
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -126,6 +215,7 @@
                             <thead>
                                 <tr class="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900/50">
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-neutral-700 dark:text-neutral-300">#</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-neutral-700 dark:text-neutral-300">Photo</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-neutral-700 dark:text-neutral-300">Name</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-neutral-700 dark:text-neutral-300">Email</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-neutral-700 dark:text-neutral-300">Position</th>
@@ -138,6 +228,19 @@
                                 @forelse($employees as $employee)
                                     <tr class="transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
                                         <td class="px-4 py-3 text-sm text-neutral-600 dark:text-neutral-400">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-3">
+                                            @if($employee->photo)
+                                                <img
+                                                    src="{{ Storage::url($employee->photo) }}"
+                                                    alt="{{ $employee->name }}"
+                                                    class="h-12 w-12 rounded-full object-cover ring-2 ring-blue-100 dark:ring-blue-900"
+                                                >
+                                            @else
+                                                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                                                    {{ strtoupper(substr($employee->name, 0, 2)) }}
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td class="px-4 py-3 text-sm text-neutral-900 dark:text-neutral-100">{{ $employee->name }}</td>
                                         <td class="px-4 py-3 text-sm text-neutral-600 dark:text-neutral-400">{{ $employee->email }}</td>
                                         <td class="px-4 py-3 text-sm text-neutral-600 dark:text-neutral-400">{{ $employee->position }}</td>
@@ -146,7 +249,7 @@
                                             {{ $employee->department ? $employee->department->department_name : 'N/A' }}
                                         </td>
                                         <td class="px-4 py-3 text-sm">
-                                            <button onclick="editEmployee({{ $employee->id }}, '{{ $employee->name }}', '{{ $employee->email }}', '{{ $employee->position }}', '{{ $employee->salary }}', {{ $employee->department_id }})"
+                                            <button onclick="editEmployee({{ $employee->id }}, '{{ $employee->name }}', '{{ $employee->email }}', '{{ $employee->position }}', '{{ $employee->salary }}', {{ $employee->department_id }}, '{{ $employee->photo }}')"
                                                     class="text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                                                 Edit
                                             </button>
@@ -154,7 +257,7 @@
                                             <form action="{{ route('employees.destroy', $employee) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this employee?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">Delete</button>
+                                                <button type="submit" class="text-red-600 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">Trash</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -178,7 +281,7 @@
         <div class="w-full max-w-2xl rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
             <h2 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-neutral-100">Edit Employee</h2>
 
-            <form id="editEmployeeForm" method="POST">
+            <form id="editEmployeeForm" method="POST" enctype="multipart/form-data" >
                 @csrf
                 @method('PUT')
 
@@ -214,6 +317,28 @@
                     </div>
                 </div>
 
+                <!-- Photo Upload in Edit Modal -->
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                        Student Photo
+                    </label>
+
+                    <!-- Current Photo Preview -->
+                    <div id="currentPhotoPreview" class="mb-3"></div>
+
+                    <input
+                        type="file"
+                        id="edit_photo"
+                        name="photo"
+                        accept="image/jpeg,image/png,image/jpg"
+                        class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100 dark:file:bg-blue-900/20 dark:file:text-blue-400"
+                    >
+                    <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                        Leave empty to keep current photo. JPG, PNG or JPEG. Max 2MB.
+                    </p>
+                </div>
+
+
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" onclick="closeEditEmployeeModal()" class="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700">
                         Cancel
@@ -227,7 +352,7 @@
     </div>
 
     <script>
-        function editEmployee(id, name, email, position, salary, departmentId) {
+        function editEmployee(id, name, email, position, salary, departmentId , photo) {
             document.getElementById('editEmployeeModal').classList.remove('hidden');
             document.getElementById('editEmployeeModal').classList.add('flex');
             document.getElementById('editEmployeeForm').action = `/employees/${id}`;
@@ -236,6 +361,25 @@
             document.getElementById('edit_position').value = position;
             document.getElementById('edit_salary').value = salary;
             document.getElementById('edit_department_id').value = departmentId || '';
+
+            const photoPreview = document.getElementById('currentPhotoPreview');
+            if (photo) {
+                photoPreview.innerHTML = `
+                    <div class="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 dark:border-neutral-700">
+                        <img src="/storage/${photo}" alt="${name}" class="h-16 w-16 rounded-full object-cover">
+                        <div>
+                            <p class="text-sm font-medium text-neutral-700 dark:text-neutral-300">Current Photo</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400">Upload new photo to replace</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                photoPreview.innerHTML = `
+                    <div class="rounded-lg border border-dashed border-neutral-300 p-4 text-center dark:border-neutral-600">
+                        <p class="text-sm text-neutral-500 dark:text-neutral-400">No photo uploaded</p>
+                    </div>
+                `;
+            }
         }
 
         function closeEditEmployeeModal() {

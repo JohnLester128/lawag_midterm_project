@@ -21,6 +21,18 @@
                         wire:navigate>
                         {{ __('Deparments') }}
                     </flux:navlist.item>
+
+
+
+
+
+                    <flux:navlist.item
+                        icon="trash"
+                        :href="route('employees.trash')"
+                        :current="request()->routeIs('employees.trash')"
+                        wire:navigate>
+                        {{ __('Trash') }}
+                    </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

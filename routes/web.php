@@ -41,6 +41,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+    Route::get('/employees/trash', [EmployeeController::class, 'trash'])->name('employees.trash');
+    Route::post('/employees/{id}/restore', [EmployeeController::class, 'restore'])->name('employees.restore');
+    Route::delete('/employees/{id}/force-delete', [EmployeeController::class, 'forceDelete'])->name('employees.force-delete');
+
+    Route::get('/employees/export', [EmployeeController::class, 'export'])->name('employees.export');
 });
 
 // Department routes - CRUD operations
